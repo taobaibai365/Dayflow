@@ -152,7 +152,7 @@ struct OnboardingLLMSelectionView: View {
                     }
                 }
             ),
-            
+
             // Bring your own API card (selected by default)
             FlexibleProviderCard(
                 id: "gemini",
@@ -221,7 +221,106 @@ struct OnboardingLLMSelectionView: View {
                     }
                 }
             ),
-            
+
+            // DeepSeek - Chinese AI Provider
+            FlexibleProviderCard(
+                id: "deepseek",
+                title: "DeepSeek",
+                badgeText: "NEW",
+                badgeType: .blue,
+                icon: "sparkles",
+                features: [
+                    ("Chinese AI with strong coding & reasoning capabilities", true),
+                    ("Very affordable API pricing", true),
+                    ("Fast and accurate for screen analysis", true),
+                    ("Requires API key from platform.deepseek.com", false)
+                ],
+                isSelected: selectedProvider == "deepseek",
+                buttonMode: .onboarding(onProceed: {
+                    if selectedProvider == "deepseek" {
+                        saveProviderSelection()
+                        onNext("deepseek")
+                    } else {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                            didUserSelectProvider = true
+                            selectedProvider = "deepseek"
+                        }
+                    }
+                }),
+                onSelect: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                        didUserSelectProvider = true
+                        selectedProvider = "deepseek"
+                    }
+                }
+            ),
+
+            // Zhipu GLM - Chinese AI Provider
+            FlexibleProviderCard(
+                id: "zhipu",
+                title: "智谱 GLM",
+                badgeText: "国产 AI",
+                badgeType: .orange,
+                icon: "sparkles",
+                features: [
+                    ("Leading Chinese AI company with vision capabilities", true),
+                    ("GLM-4V model supports image understanding", true),
+                    ("Competitive pricing for Chinese users", true),
+                    ("Requires API key from open.bigmodel.cn", false)
+                ],
+                isSelected: selectedProvider == "zhipu",
+                buttonMode: .onboarding(onProceed: {
+                    if selectedProvider == "zhipu" {
+                        saveProviderSelection()
+                        onNext("zhipu")
+                    } else {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                            didUserSelectProvider = true
+                            selectedProvider = "zhipu"
+                        }
+                    }
+                }),
+                onSelect: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                        didUserSelectProvider = true
+                        selectedProvider = "zhipu"
+                    }
+                }
+            ),
+
+            // Alibaba Qwen - Chinese AI Provider
+            FlexibleProviderCard(
+                id: "alibaba",
+                title: "阿里通义千问",
+                badgeText: "国产 AI",
+                badgeType: .orange,
+                icon: "sparkles",
+                features: [
+                    ("Alibaba's Qwen VL model with strong vision", true),
+                    ("Well-suited for Chinese language content", true),
+                    ("Reliable API with good performance", true),
+                    ("Requires API key from dashscope.aliyuncs.com", false)
+                ],
+                isSelected: selectedProvider == "alibaba",
+                buttonMode: .onboarding(onProceed: {
+                    if selectedProvider == "alibaba" {
+                        saveProviderSelection()
+                        onNext("alibaba")
+                    } else {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                            didUserSelectProvider = true
+                            selectedProvider = "alibaba"
+                        }
+                    }
+                }),
+                onSelect: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                        didUserSelectProvider = true
+                        selectedProvider = "alibaba"
+                    }
+                }
+            ),
+
             /*
             // Dayflow Pro card
             FlexibleProviderCard(
@@ -263,7 +362,7 @@ struct OnboardingLLMSelectionView: View {
     
     private func saveProviderSelection() {
         let providerType: LLMProviderType
-        
+
         switch selectedProvider {
         case "ollama":
             providerType = .ollamaLocal()
@@ -273,10 +372,16 @@ struct OnboardingLLMSelectionView: View {
             providerType = .dayflowBackend()
         case "chatgpt_claude":
             providerType = .chatGPTClaude
+        case "deepseek":
+            providerType = .chineseLLM(type: .deepSeek, endpoint: nil, model: nil)
+        case "zhipu":
+            providerType = .chineseLLM(type: .zhipu, endpoint: nil, model: nil)
+        case "alibaba":
+            providerType = .chineseLLM(type: .alibaba, endpoint: nil, model: nil)
         default:
             providerType = .geminiDirect
         }
-        
+
         UserDefaults.standard.set(selectedProvider, forKey: "selectedLLMProvider")
         if let encoded = try? JSONEncoder().encode(providerType) {
             UserDefaults.standard.set(encoded, forKey: "llmProviderType")

@@ -36,6 +36,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ note: Notification) {
+        let didOnboard = UserDefaults.standard.bool(forKey: "didOnboard")
+
         // Block termination by default; only specific flows enable it.
         AppDelegate.allowTermination = false
 
@@ -96,12 +98,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Check if we've passed the screen recording permission step
         let onboardingStep = OnboardingStepMigration.migrateIfNeeded()
-        let didOnboard = UserDefaults.standard.bool(forKey: "didOnboard")
+        // didOnboard was already declared at the start of applicationDidFinishLaunching
 
-        // Seed recording flag low, then create recorder so the first
-        // transition to true will reliably start capture.
-        AppState.shared.isRecording = false
-        recorder = ScreenRecorder(autoStart: true)
+        // Seed recording flag low, then create recorder
+        // IMPORTANT: Don't auto-start - we'll manually start after all initialization
+        AppState.shared.setRecording(false, persist: false)
+        recorder = ScreenRecorder(autoStart: false)  // Changed to false
 
         // Only attempt to start recording if we're past the screen step or fully onboarded
         // Steps: 0=welcome, 1=howItWorks, 2=llmSelection, 3=llmSetup, 4=categories, 5=screen, 6=completion
@@ -109,33 +111,71 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Onboarding complete - enable persistence and restore user preference
             AppState.shared.enablePersistence()
 
-            // Try to start recording, but handle permission failures gracefully
-            Task { [weak self] in
-                guard let self else { return }
-                do {
-                    // Check if we have permission by trying to access content
-                    _ = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-                    // Permission granted - restore saved preference or default to ON
-                    await MainActor.run {
-                        let savedPref = AppState.shared.getSavedPreference()
-                        AppState.shared.isRecording = savedPref ?? true
-                    }
-                    let finalState = await MainActor.run { AppState.shared.isRecording }
-                    AnalyticsService.shared.capture("recording_toggled", ["enabled": finalState, "reason": "auto"])
-                } catch {
-                    // No permission or error - don't start recording
-                    // User will need to grant permission in onboarding
-                    await MainActor.run {
-                        AppState.shared.isRecording = false
-                    }
-                    print("Screen recording permission not granted, skipping auto-start")
+            NSLog("[AppDelegate] didOnboard=\(didOnboard), onboardingStep=\(onboardingStep)")
+
+            // CRITICAL: If didOnboard is true, permission was already granted during onboarding
+            // We can safely default to ON regardless of what CGPreflightScreenCaptureAccess() returns
+            // (it may return false due to sandboxing issues even though permission is granted)
+            let hasPermission = didOnboard || CGPreflightScreenCaptureAccess()
+            NSLog("[AppDelegate] hasPermission=\(hasPermission) (didOnboard=\(didOnboard), CGPreflight=\(CGPreflightScreenCaptureAccess()))")
+
+            if hasPermission {
+                NSLog("[AppDelegate] ENTERED hasPermission=true branch")
+                // IMPORTANT: If recording is currently false but we have permission, reset the state
+                // so we can properly default to ON. This handles the case where recording was
+                // disabled in a previous session (e.g., by PauseManager) and we want to restore
+                // the default ON state when permission is granted.
+                let currentRecording = UserDefaults.standard.object(forKey: "isRecording")
+                NSLog("[AppDelegate] DEBUG: currentRecording=\(currentRecording.map { "\($0)" } ?? "nil")")
+                if currentRecording as? Bool == false {
+                    // Remove the stale false value so we can default to ON
+                    UserDefaults.standard.removeObject(forKey: "isRecording")
+                    NSLog("[AppDelegate] Removed stale isRecording=false to enable default ON state")
                 }
-                self.flushPendingDeepLinks()
+
+                // Permission is already granted - restore saved preference or default to ON
+                let savedPref = AppState.shared.getSavedPreference()
+                NSLog("[AppDelegate] savedPref=\(savedPref.map { "\($0)" } ?? "nil")")
+
+                // IMPORTANT: If saved preference is explicitly false, respect it.
+                // Otherwise (nil or true), default to ON.
+                let shouldRecord: Bool
+                if let pref = savedPref {
+                    // User has explicitly set a preference
+                    shouldRecord = pref
+                } else {
+                    // No saved preference - default to ON when permission is granted
+                    shouldRecord = true
+                }
+
+                NSLog("[AppDelegate] DEBUG: shouldRecord=\(shouldRecord)")
+
+                // IMPORTANT: Immediately save to UserDefaults to prevent other code from overwriting
+                // Then set the AppState after deep links are flushed
+                UserDefaults.standard.set(shouldRecord, forKey: "isRecording")
+                NSLog("[AppDelegate] Immediately saved isRecording=\(shouldRecord) to UserDefaults")
+
+                // Flush deep links first, then set AppState
+                flushPendingDeepLinks()
+
+                // Now set AppState after deep links are processed
+                AppState.shared.setRecording(shouldRecord)
+                NSLog("[AppDelegate] Set AppState.isRecording to=\(AppState.shared.isRecording)")
+
+                AnalyticsService.shared.capture("recording_toggled", ["enabled": AppState.shared.isRecording, "reason": "auto"])
+            } else {
+                NSLog("[AppDelegate] ENTERED hasPermission=false branch - recording will be disabled")
+                // No permission - don't start recording and don't trigger any dialogs
+                // The permission request will happen in the onboarding flow if needed
+                AppState.shared.setRecording(false)
+                NSLog("[AppDelegate] No permission, isRecording set to false")
+                flushPendingDeepLinks()
             }
         } else {
             // Still in early onboarding, don't enable persistence yet
             // Keep recording off and don't persist this state
-            AppState.shared.isRecording = false
+            AppState.shared.setRecording(false, persist: false)
+            NSLog("[AppDelegate] Still in onboarding, isRecording set to false")
             flushPendingDeepLinks()
         }
         
@@ -172,6 +212,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Track foreground sessions for engagement analytics
         setupForegroundTracking()
+
+        // IMPORTANT: Final check to ensure recording state is correct after all initialization
+        // This prevents other components from overwriting the intended state
+        if didOnboard || onboardingStep > 5 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                guard let self else { return }
+                let hasPermission = CGPreflightScreenCaptureAccess()
+                if hasPermission {
+                    let savedPref = UserDefaults.standard.object(forKey: "isRecording") == nil ? nil : UserDefaults.standard.bool(forKey: "isRecording")
+                    let current = AppState.shared.isRecording
+                    NSLog("[AppDelegate] Final check: saved=\(savedPref.map { "\($0)" } ?? "nil"), current=\(current), permission=\(hasPermission)")
+
+                    // If permission is granted and no explicit "false" preference, enable recording
+                    if savedPref != false && !current {
+                        NSLog("[AppDelegate] Permission granted with no explicit disable - forcing enabled")
+                        AppState.shared.setRecording(true)
+                        NSLog("[AppDelegate] Forced isRecording to true")
+                    }
+
+                    // Start the recorder manually
+                    if AppState.shared.isRecording {
+                        self.recorder.start()
+                        NSLog("[AppDelegate] Manually started recorder")
+                    }
+                }
+            }
+        }
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -232,6 +299,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         case .dayflowBackend: return "dayflow"
                         case .ollamaLocal: return "ollama"
                         case .chatGPTClaude: return "chat_cli"
+                        case .chineseLLM(let type, _, _): return type.rawValue
                         }
                     }
                     return "unknown"

@@ -275,7 +275,7 @@ struct FlexibleProviderCard: View {
 
 
 enum BadgeType {
-    case green, orange, blue
+    case green, orange, blue, purple
 }
 
 
@@ -302,7 +302,7 @@ struct BadgeView: View {
         switch type {
         case .green:
             return .semibold
-        case .orange, .blue:
+        case .orange, .blue, .purple:
             return .bold
         }
     }
@@ -311,7 +311,7 @@ struct BadgeView: View {
         switch type {
         case .green:
             return 0.5
-        case .orange, .blue:
+        case .orange, .blue, .purple:
             return 0.7
         }
     }
@@ -324,6 +324,8 @@ struct BadgeView: View {
             return Color(red: 0.91, green: 0.34, blue: 0.16)
         case .blue:
             return Color(red: 0.19, green: 0.39, blue: 0.8)
+        case .purple:
+            return Color(red: 0.6, green: 0.2, blue: 0.8)
         }
     }
     
@@ -362,6 +364,11 @@ struct BadgeView: View {
                 Gradient.Stop(color: Color(red: 0.34, green: 0.56, blue: 1), location: 0.00),
                 Gradient.Stop(color: Color(red: 1, green: 0.98, blue: 0.95).opacity(0), location: 1.00)
             ]
+        case .purple:
+            return [
+                Gradient.Stop(color: Color(red: 0.7, green: 0.3, blue: 0.9), location: 0.00),
+                Gradient.Stop(color: Color(red: 1, green: 0.95, blue: 1).opacity(0), location: 1.00)
+            ]
         }
     }
     
@@ -373,6 +380,8 @@ struct BadgeView: View {
             return Color(red: 1, green: 0.53, blue: 0)
         case .blue:
             return Color(red: 0.34, green: 0.56, blue: 1)
+        case .purple:
+            return Color(red: 0.7, green: 0.3, blue: 0.9)
         }
     }
     
@@ -384,6 +393,8 @@ struct BadgeView: View {
             return Color(red: 1, green: 0.25, blue: 0.02).opacity(0.3)
         case .blue:
             return Color(red: 0.34, green: 0.56, blue: 1).opacity(0.3)
+        case .purple:
+            return Color(red: 0.7, green: 0.3, blue: 0.9).opacity(0.3)
         }
     }
 }

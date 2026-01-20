@@ -62,6 +62,8 @@ final class LLMService: LLMServicing {
             let preferredTool = UserDefaults.standard.string(forKey: "chatCLIPreferredTool") ?? "codex"
             let tool: ChatCLITool = (preferredTool == "claude") ? .claude : .codex
             return ChatCLIProvider(tool: tool)
+        case .chineseLLM(let type, let endpoint, let model):
+            return makeChineseLLMProvider(type: type, endpoint: endpoint, model: model)
         }
     }
     
@@ -75,12 +77,23 @@ final class LLMService: LLMServicing {
         }
     }
 
+    private func makeChineseLLMProvider(type: ChineseLLMProviderType, endpoint: String?, model: String?) -> LLMProvider? {
+        let apiKeyKeyName = type.apiKeyKeyName
+        if let apiKey = KeychainManager.shared.retrieve(for: apiKeyKeyName), !apiKey.isEmpty {
+            return ChineseLLMProvider(providerType: type, apiKey: apiKey, endpoint: endpoint, model: model)
+        } else {
+            print("❌ [LLMService] Failed to retrieve \(type.displayName) API key from Keychain")
+            return nil
+        }
+    }
+
     private func providerName() -> String {
         switch providerType {
         case .geminiDirect: return "gemini"
         case .dayflowBackend: return "dayflow"
         case .ollamaLocal: return "ollama"
         case .chatGPTClaude: return "chat_cli"
+        case .chineseLLM(let type, _, _): return type.rawValue
         }
     }
 

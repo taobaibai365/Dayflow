@@ -27,6 +27,53 @@ enum LLMProviderType: Codable {
     case dayflowBackend(endpoint: String = "https://api.dayflow.app")
     case ollamaLocal(endpoint: String = "http://localhost:11434")
     case chatGPTClaude
+    case chineseLLM(type: ChineseLLMProviderType, endpoint: String? = nil, model: String? = nil)
+}
+
+enum ChineseLLMProviderType: String, Codable, CaseIterable {
+    case deepSeek = "deepseek"
+    case zhipu = "zhipu"
+    case alibaba = "alibaba"
+
+    var displayName: String {
+        switch self {
+        case .deepSeek: return "DeepSeek"
+        case .zhipu: return "智谱 GLM"
+        case .alibaba: return "阿里通义千问"
+        }
+    }
+
+    var defaultEndpoint: String {
+        switch self {
+        case .deepSeek: return "https://api.deepseek.com"
+        case .zhipu: return "https://open.bigmodel.cn/api/paas/v4"
+        case .alibaba: return "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        }
+    }
+
+    var defaultModel: String {
+        switch self {
+        case .deepSeek: return "deepseek-chat"
+        case .zhipu: return "glm-4v"
+        case .alibaba: return "qwen-vl-max"
+        }
+    }
+
+    var apiKeyKeyName: String {
+        switch self {
+        case .deepSeek: return "deepseek_api_key"
+        case .zhipu: return "zhipu_api_key"
+        case .alibaba: return "alibaba_api_key"
+        }
+    }
+
+    var supportsVision: Bool {
+        switch self {
+        case .deepSeek: return true  // deepseek-chat supports vision
+        case .zhipu: return true     // glm-4v has vision
+        case .alibaba: return true   // qwen-vl-max has vision
+        }
+    }
 }
 
 struct BatchingConfig {

@@ -113,8 +113,8 @@ final class PauseManager: ObservableObject {
             isPausedIndefinitely = true
         }
 
-        // Stop recording
-        AppState.shared.isRecording = false
+        // Stop recording (without persisting the false state)
+        AppState.shared.setRecordingWithoutPersisting(false)
 
         // Send analytics
         AnalyticsService.shared.capture("recording_paused", [
@@ -134,7 +134,7 @@ final class PauseManager: ObservableObject {
         isPausedIndefinitely = false
         currentPauseDuration = nil
 
-        // Start recording
+        // Start recording (this will persist normally)
         AppState.shared.isRecording = true
 
         // Send analytics

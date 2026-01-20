@@ -1,0 +1,64 @@
+/*
+  Localizable.strings (Chinese)
+  Dayflow
+*/
+
+// MARK: - App Settings
+"settings.title" = "设置";
+"settings.storage" = "存储";
+"settings.providers" = "服务商";
+"settings.other" = "其他";
+"settings.language" = "语言";
+
+// MARK: - Provider Names
+"provider.ollama" = "使用本地 AI";
+"provider.gemini" = "Gemini";
+"provider.chatgpt_claude" = "ChatGPT 或 Claude";
+"provider.deepseek" = "DeepSeek";
+"provider.zhipu" = "智谱 GLM";
+"provider.alibaba" = "阿里通义千问";
+
+// MARK: - Provider Badges
+"badge.most_private" = "最隐私";
+"badge.recommended" = "推荐";
+"badge.new" = "新";
+"badge.chinese_ai" = "国产 AI";
+
+// MARK: - Provider Descriptions
+"provider.ollama.summary" = "隐私 & 离线 • 16GB+ 内存 • 智力较低";
+"provider.gemini.summary" = "Gemini 免费版 • 快速 & 准确";
+"provider.chatgpt_claude.summary" = "已有付费账户可免费使用 • 连接 CLI 工具";
+"provider.deepseek.summary" = "国产 AI • 价格实惠 • 编码能力强";
+"provider.zhipu.summary" = "国产 AI • 视觉模型 • 价格有竞争力";
+"provider.alibaba.summary" = "国产 AI • 通义千问 VL 模型 • 中文优化";
+
+// MARK: - Setup Titles
+"setup.get_api_key" = "获取 API 密钥";
+"setup.enter_api_key" = "输入 API 密钥";
+"setup.test_connection" = "测试连接";
+"setup.complete" = "完成";
+
+// MARK: - Setup Messages
+"setup.all_set" = "全部完成！";
+"setup.provider_ready" = "现已配置完成，可与 Dayflow 一起使用。";
+"setup.click_to_verify" = "点击下方按钮验证您的 API 密钥是否适用于";
+
+// MARK: - Common UI
+"common.back" = "返回";
+"common.next" = "下一步";
+"common.complete_setup" = "完成设置";
+"common.test_required" = "需要测试";
+"common.save" = "保存";
+"common.cancel" = "取消";
+"common.close" = "关闭";
+
+// MARK: - Onboarding
+"onboarding.choose_way" = "选择 Dayflow 运行方式";
+"onboarding.not_sure" = "不确定该选哪个？";
+"onboarding.bring_your_own" = "自带 API 密钥是最简单的设置方式（30秒）。";
+"onboarding.can_switch" = "您可以随时在设置中切换。";
+
+// MARK: - Language
+"language.english" = "English";
+"language.chinese" = "简体中文";
+"language.restart_required" = "更改语言需要重启应用才能完全生效。";

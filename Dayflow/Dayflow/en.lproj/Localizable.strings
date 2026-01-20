@@ -1,0 +1,64 @@
+/*
+  Localizable.strings (English)
+  Dayflow
+*/
+
+// MARK: - App Settings
+"settings.title" = "Settings";
+"settings.storage" = "Storage";
+"settings.providers" = "Providers";
+"settings.other" = "Other";
+"settings.language" = "Language";
+
+// MARK: - Provider Names
+"provider.ollama" = "Use local AI";
+"provider.gemini" = "Gemini";
+"provider.chatgpt_claude" = "ChatGPT or Claude";
+"provider.deepseek" = "DeepSeek";
+"provider.zhipu" = "Zhipu GLM";
+"provider.alibaba" = "Alibaba Qwen";
+
+// MARK: - Provider Badges
+"badge.most_private" = "MOST PRIVATE";
+"badge.recommended" = "RECOMMENDED";
+"badge.new" = "NEW";
+"badge.chinese_ai" = "国产 AI";
+
+// MARK: - Provider Descriptions
+"provider.ollama.summary" = "Private & offline • 16GB+ RAM • less intelligent";
+"provider.gemini.summary" = "Gemini free tier • fast & accurate";
+"provider.chatgpt_claude.summary" = "Free if you're already on a paid plan • hooks into their CLI tools";
+"provider.deepseek.summary" = "Chinese AI • affordable • strong coding capabilities";
+"provider.zhipu.summary" = "国产 AI • vision model • competitive pricing";
+"provider.alibaba.summary" = "国产 AI • Qwen VL model • Chinese optimized";
+
+// MARK: - Setup Titles
+"setup.get_api_key" = "Get API key";
+"setup.enter_api_key" = "Enter API key";
+"setup.test_connection" = "Test Connection";
+"setup.complete" = "Complete";
+
+// MARK: - Setup Messages
+"setup.all_set" = "All set!";
+"setup.provider_ready" = "is now configured and ready to use with Dayflow.";
+"setup.click_to_verify" = "Click the button below to verify your API key works with";
+
+// MARK: - Common UI
+"common.back" = "Back";
+"common.next" = "Next";
+"common.complete_setup" = "Complete Setup";
+"common.test_required" = "Test Required";
+"common.save" = "Save";
+"common.cancel" = "Cancel";
+"common.close" = "Close";
+
+// MARK: - Onboarding
+"onboarding.choose_way" = "Choose a way to run Dayflow";
+"onboarding.not_sure" = "Not sure which to choose?";
+"onboarding.bring_your_own" = "Bring your own keys is the easiest setup (30s).";
+"onboarding.can_switch" = "You can switch at any time in the settings.";
+
+// MARK: - Language
+"language.english" = "English";
+"language.chinese" = "中文";
+"language.restart_required" = "Restart required for language change to take full effect.";

@@ -149,6 +149,12 @@ struct LLMProviderSetupView: View {
             return "Use local AI"
         case "chatgpt_claude":
             return "Connect ChatGPT or Claude"
+        case "deepseek":
+            return "DeepSeek"
+        case "zhipu":
+            return "智谱 GLM"
+        case "alibaba":
+            return "阿里通义千问"
         default:
             return "Gemini"
         }
@@ -717,12 +723,23 @@ struct LLMProviderSetupView: View {
             KeychainManager.shared.store(setupState.apiKey, for: "gemini")
             GeminiModelPreference(primary: setupState.geminiModel).save()
         }
-        
+
+        // Save API key for Chinese AI providers
+        if activeProviderType == "deepseek" && !setupState.apiKey.isEmpty {
+            KeychainManager.shared.store(setupState.apiKey, for: "deepseek_api_key")
+        }
+        if activeProviderType == "zhipu" && !setupState.apiKey.isEmpty {
+            KeychainManager.shared.store(setupState.apiKey, for: "zhipu_api_key")
+        }
+        if activeProviderType == "alibaba" && !setupState.apiKey.isEmpty {
+            KeychainManager.shared.store(setupState.apiKey, for: "alibaba_api_key")
+        }
+
         // Save local endpoint for local engine selection
         if activeProviderType == "ollama" {
             persistLocalSettings()
         }
-        
+
         // Mark setup as complete
         UserDefaults.standard.set(true, forKey: "\(activeProviderType)SetupComplete")
     }
@@ -825,6 +842,7 @@ class ProviderSetupState: ObservableObject {
     private let claudeStreamer = StreamingCLI()
     private var codexStartTask: Task<Void, Never>?
     private var claudeStartTask: Task<Void, Never>?
+    private var currentProviderType: String = "gemini"  // Track current provider type
 
     init() {
         let preference = GeminiModelPreference.load()
@@ -860,6 +878,7 @@ class ProviderSetupState: ObservableObject {
     }
     
     func configureSteps(for provider: String) {
+        currentProviderType = provider  // Store provider type
         switch provider {
         case "ollama":
             steps = [
@@ -920,6 +939,39 @@ class ProviderSetupState: ObservableObject {
             codexStreamOutput = ""
             claudeStreamOutput = ""
             cliPrompt = "Say hello"
+        case "deepseek":
+            steps = [
+                SetupStep(id: "getkey", title: "Get API key",
+                          contentType: .apiKeyInstructions),
+                SetupStep(id: "enterkey", title: "Enter API key",
+                          contentType: .apiKeyInput),
+                SetupStep(id: "verify", title: "Test connection",
+                          contentType: .information("Test Connection", "Click the button below to verify your API key works with DeepSeek")),
+                SetupStep(id: "complete", title: "Complete",
+                          contentType: .information("All set!", "DeepSeek is now configured and ready to use with Dayflow."))
+            ]
+        case "zhipu":
+            steps = [
+                SetupStep(id: "getkey", title: "Get API key",
+                          contentType: .apiKeyInstructions),
+                SetupStep(id: "enterkey", title: "Enter API key",
+                          contentType: .apiKeyInput),
+                SetupStep(id: "verify", title: "Test connection",
+                          contentType: .information("Test Connection", "Click the button below to verify your API key works with 智谱 GLM")),
+                SetupStep(id: "complete", title: "Complete",
+                          contentType: .information("All set!", "智谱 GLM is now configured and ready to use with Dayflow."))
+            ]
+        case "alibaba":
+            steps = [
+                SetupStep(id: "getkey", title: "Get API key",
+                          contentType: .apiKeyInstructions),
+                SetupStep(id: "enterkey", title: "Enter API key",
+                          contentType: .apiKeyInput),
+                SetupStep(id: "verify", title: "Test connection",
+                          contentType: .information("Test Connection", "Click the button below to verify your API key works with 阿里通义千问")),
+                SetupStep(id: "complete", title: "Complete",
+                          contentType: .information("All set!", "阿里通义千问 is now configured and ready to use with Dayflow."))
+            ]
         default: // gemini
             steps = [
                 SetupStep(id: "getkey", title: "Get API key",
@@ -937,11 +989,24 @@ class ProviderSetupState: ObservableObject {
     func goNext() {
         // Save API key to keychain when moving from API key input step
         if currentStep.contentType.isApiKeyInput && !apiKey.isEmpty {
-            KeychainManager.shared.store(apiKey, for: "gemini")
+            let keychainKey: String
+            switch currentProviderType {
+            case "deepseek":
+                keychainKey = "deepseek_api_key"
+            case "zhipu":
+                keychainKey = "zhipu_api_key"
+            case "alibaba":
+                keychainKey = "alibaba_api_key"
+            default:
+                keychainKey = "gemini"
+            }
+            KeychainManager.shared.store(apiKey, for: keychainKey)
             // Reset test state when API key changes
             hasTestedConnection = false
             testSuccessful = false
-            persistGeminiModelSelection(source: "onboarding_step")
+            if currentProviderType == "gemini" {
+                persistGeminiModelSelection(source: "onboarding_step")
+            }
         }
 
         if currentStepIndex < steps.count - 1 {

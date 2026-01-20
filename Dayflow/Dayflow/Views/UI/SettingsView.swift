@@ -140,6 +140,9 @@ struct SettingsView: View {
     @AppStorage("showJournalDebugPanel") private var showJournalDebugPanel = false
     @AppStorage("showDockIcon") private var showDockIcon = true
 
+    // Language
+    @StateObject private var localizationManager = LocalizationManager.shared
+
     // Providers – debug log copy feedback
 
     private let usageFormatter: ByteCountFormatter = {
@@ -1010,6 +1013,9 @@ struct SettingsView: View {
         case "gemini": return "Gemini"
         case "chatgpt_claude": return "ChatGPT or Claude"
         case "dayflow": return "Dayflow Pro"
+        case "deepseek": return "DeepSeek"
+        case "zhipu": return "智谱 GLM"
+        case "alibaba": return "阿里通义千问"
         default: return id.capitalized
         }
     }
@@ -1064,6 +1070,33 @@ struct SettingsView: View {
                     Text("Dayflow v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
                         .font(.custom("Nunito", size: 12))
                         .foregroundColor(.black.opacity(0.45))
+                }
+            }
+
+            // Language selection card
+            SettingsCard(title: "Language", subtitle: "Choose your preferred language / 选择您的首选语言") {
+                VStack(alignment: .leading, spacing: 14) {
+                    Picker("", selection: $localizationManager.currentLanguage) {
+                        ForEach(AppLanguage.allCases) { language in
+                            HStack {
+                                Text(language.displayName)
+                                    .font(.custom("Nunito", size: 13))
+                                    .foregroundColor(.black.opacity(0.7))
+                                Text("·")
+                                    .font(.custom("Nunito", size: 13))
+                                    .foregroundColor(.black.opacity(0.4))
+                                Text(language.nativeName)
+                                    .font(.custom("Nunito", size: 13))
+                                    .foregroundColor(.black.opacity(0.5))
+                            }
+                            .tag(language)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    Text("Language changes will take effect after restarting the app. / 语言更改将在重启应用后生效。")
+                        .font(.custom("Nunito", size: 11.5))
+                        .foregroundColor(.black.opacity(0.5))
                 }
             }
         }
@@ -1178,7 +1211,12 @@ struct SettingsView: View {
         }
 
         Task.detached(priority: .utility) {
-            let permission = CGPreflightScreenCaptureAccess()
+            // Check both system-level permission and didOnboard status
+            // CGPreflightScreenCaptureAccess() may return false due to sandboxing even when permission is granted
+            let systemPermission = CGPreflightScreenCaptureAccess()
+            let didOnboard = UserDefaults.standard.bool(forKey: "didOnboard")
+            let permission = didOnboard || systemPermission  // Assume permission if onboarding completed
+
             let recordingsURL = StorageManager.shared.recordingsRoot
 
             let recordingsSize = SettingsView.directorySize(at: recordingsURL)
@@ -1672,6 +1710,8 @@ struct SettingsView: View {
                 currentProvider = "ollama"
             case .chatGPTClaude:
                 currentProvider = "chatgpt_claude"
+            case .chineseLLM(let type, _, _):
+                currentProvider = type.rawValue
             }
         }
         hasLoadedProvider = true
@@ -1702,6 +1742,12 @@ struct SettingsView: View {
             providerType = .dayflowBackend()
         case "chatgpt_claude":
             providerType = .chatGPTClaude
+        case "deepseek":
+            providerType = .chineseLLM(type: .deepSeek, endpoint: nil, model: nil)
+        case "zhipu":
+            providerType = .chineseLLM(type: .zhipu, endpoint: nil, model: nil)
+        case "alibaba":
+            providerType = .chineseLLM(type: .alibaba, endpoint: nil, model: nil)
         default:
             return
         }
@@ -1775,6 +1821,31 @@ struct SettingsView: View {
                 badgeText: "NEW",
                 badgeType: .blue,
                 icon: "chatgpt_claude_asset"
+            ),
+            // Chinese AI Providers
+            CompactProviderInfo(
+                id: "deepseek",
+                title: "DeepSeek",
+                summary: "Chinese AI • affordable • strong coding capabilities",
+                badgeText: "国产 AI",
+                badgeType: .purple,
+                icon: "sparkles"
+            ),
+            CompactProviderInfo(
+                id: "zhipu",
+                title: "智谱 GLM",
+                summary: "国产 AI • vision model • competitive pricing",
+                badgeText: "国产 AI",
+                badgeType: .purple,
+                icon: "sparkles"
+            ),
+            CompactProviderInfo(
+                id: "alibaba",
+                title: "阿里通义千问",
+                summary: "国产 AI • Qwen VL model • Chinese optimized",
+                badgeText: "国产 AI",
+                badgeType: .purple,
+                icon: "sparkles"
             )
         ].filter { $0.id != currentProvider }
     }

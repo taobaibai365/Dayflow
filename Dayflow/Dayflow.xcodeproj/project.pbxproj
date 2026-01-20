@@ -31,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		272A36E02F1F163200CBD112 /* Dayflow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Dayflow.xcodeproj; sourceTree = "<group>"; };
 		C4C1D2A12DB56805007D5A55 /* Dayflow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dayflow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4C1D2B22DB56806007D5A55 /* DayflowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DayflowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4C1D2BC2DB56806007D5A55 /* DayflowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DayflowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +79,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		272A36E12F1F163200CBD112 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C4C1D2982DB56805007D5A55 = {
 			isa = PBXGroup;
 			children = (
@@ -198,6 +204,7 @@
 			knownRegions = (
 				en,
 				Base,
+				zh,
 			);
 			mainGroup = C4C1D2982DB56805007D5A55;
 			minimizedProjectReferenceProxies = 1;
@@ -210,6 +217,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C4C1D2A22DB56805007D5A55 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 272A36E12F1F163200CBD112 /* Products */;
+					ProjectRef = 272A36E02F1F163200CBD112 /* Dayflow.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C4C1D2A02DB56805007D5A55 /* Dayflow */,
@@ -406,13 +419,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Dayflow/Dayflow.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_ASSET_PATHS = "\"Dayflow/Preview Content\"";
-				DEVELOPMENT_TEAM = L75WYD8X4Y;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -425,7 +436,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.5.4;
-				PRODUCT_BUNDLE_IDENTIFIER = teleportlabs.com.Dayflow;
+				PRODUCT_BUNDLE_IDENTIFIER = local.dayflow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -440,13 +451,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Dayflow/Dayflow.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_ASSET_PATHS = "\"Dayflow/Preview Content\"";
-				DEVELOPMENT_TEAM = L75WYD8X4Y;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -459,7 +468,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.5.4;
-				PRODUCT_BUNDLE_IDENTIFIER = teleportlabs.com.Dayflow;
+				PRODUCT_BUNDLE_IDENTIFIER = local.dayflow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -471,9 +480,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 83;
-				DEVELOPMENT_TEAM = L75WYD8X4Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
 				MARKETING_VERSION = 1.5.4;
@@ -489,9 +498,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 83;
-				DEVELOPMENT_TEAM = L75WYD8X4Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
 				MARKETING_VERSION = 1.5.4;
@@ -506,9 +515,9 @@
 		C4C1D2CD2DB56806007D5A55 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 83;
-				DEVELOPMENT_TEAM = L75WYD8X4Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = teleportlabs.com.AmiTimeUITests;
@@ -522,9 +531,9 @@
 		C4C1D2CE2DB56806007D5A55 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 83;
-				DEVELOPMENT_TEAM = L75WYD8X4Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = teleportlabs.com.AmiTimeUITests;

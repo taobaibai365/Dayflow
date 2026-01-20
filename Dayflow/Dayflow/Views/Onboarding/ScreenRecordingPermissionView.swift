@@ -180,7 +180,9 @@ struct ScreenRecordingPermissionView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             // If already granted, mark as granted; otherwise start in notRequested
-            if CGPreflightScreenCaptureAccess() {
+            let hasPermission = CGPreflightScreenCaptureAccess()
+            print("[ScreenRecordingPermissionView] onAppear - CGPreflightScreenCaptureAccess() = \(hasPermission)")
+            if hasPermission {
                 permissionState = .granted
                 Task { @MainActor in AppDelegate.allowTermination = false }
             } else {
